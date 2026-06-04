@@ -83,7 +83,7 @@ const Login = () => {
             Privasi Anda, Prioritas Kami.
           </h2>
           <p className="text-blue-100 leading-relaxed opacity-90">
-            SafeTalkAI menggunakan enkripsi tingkat militer untuk memastikan
+            SafeTalk menggunakan enkripsi tingkat militer untuk memastikan
             setiap konsultasi Anda tetap anonim dan aman.
           </p>
         </div>

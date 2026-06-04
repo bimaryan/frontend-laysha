@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
@@ -10,6 +10,7 @@ import {
   User,
   LogOut,
   LogIn,
+  ChevronUp,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -17,8 +18,23 @@ const Sidebar = () => {
   const [userName, setUserName] = useState(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // State untuk mengontrol dropdown menu
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
   // Cek status login instan dari token (biar UI lgsg berubah)
   const isLoggedIn = !!localStorage.getItem("safetalk_token");
+
+  // Menutup dropdown jika user klik di luar area dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -26,16 +42,13 @@ const Sidebar = () => {
         const token = localStorage.getItem("safetalk_token");
         if (!token) return;
 
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/auth/user",
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await fetch("http://127.0.0.1:8000/api/auth/user", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         if (response.ok) {
           const data = await response.json();
@@ -165,9 +178,55 @@ const Sidebar = () => {
         </div>
       </nav>
 
-      {/* FOOTER USER STATUS */}
-      <div className="p-4 border-t border-slate-800 mt-auto">
-        <div className="bg-slate-800/40 rounded-xl p-3 flex items-center justify-between border border-slate-700/50 hover:bg-slate-800 transition-colors">
+      {/* FOOTER USER STATUS (DROPDOWN) */}
+      <div
+        className="p-4 border-t border-slate-800 mt-auto relative"
+        ref={dropdownRef}
+      >
+        {/* Konten Dropdown (Muncul di atas tombol jika terbuka) */}
+        {isDropdownOpen && isLoggedIn && (
+          <div className="absolute bottom-full left-4 right-4 mb-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <button
+              onClick={() => {
+                navigate("/profil");
+                setIsDropdownOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
+            >
+              <User size={18} className="text-indigo-400" />
+              <span>Profil Saya</span>
+            </button>
+            <div className="h-px bg-slate-700/50 w-full"></div>
+            <button
+              onClick={() => {
+                setIsDropdownOpen(false);
+                handleLogout();
+              }}
+              disabled={isLoggingOut}
+              className="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
+            >
+              {isLoggingOut ? (
+                <div className="w-4 h-4 border-2 border-slate-500 border-t-rose-400 rounded-full animate-spin ml-0.5"></div>
+              ) : (
+                <LogOut size={18} />
+              )}
+              <span>{isLoggingOut ? "Keluar..." : "Keluar Akun"}</span>
+            </button>
+          </div>
+        )}
+
+        {/* Trigger / Tombol Status User */}
+        <div
+          onClick={() => {
+            if (isLoggedIn) setIsDropdownOpen(!isDropdownOpen);
+            else navigate("/login");
+          }}
+          className={`bg-slate-800/40 rounded-xl p-3 flex items-center justify-between border transition-all cursor-pointer ${
+            isDropdownOpen
+              ? "border-slate-600 bg-slate-800"
+              : "border-slate-700/50 hover:bg-slate-800"
+          }`}
+        >
           <div className="flex items-center gap-3 overflow-hidden">
             {/* Ikon berubah tergantung status login */}
             <div
@@ -195,29 +254,22 @@ const Sidebar = () => {
             </div>
           </div>
 
-          {/* Tombol Logout ATAU Login berdasarkan status token */}
-          {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-700 rounded-lg transition-all disabled:opacity-50"
-              title="Keluar dari akun"
-            >
-              {isLoggingOut ? (
-                <div className="w-4 h-4 border-2 border-slate-500 border-t-rose-400 rounded-full animate-spin"></div>
-              ) : (
-                <LogOut size={16} />
-              )}
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate("/login")}
-              className="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-700 rounded-lg transition-all"
-              title="Login ke Akun"
-            >
-              <LogIn size={16} />
-            </button>
-          )}
+          {/* Ikon Aksi (Chevron / Login) */}
+          <div className="text-slate-400">
+            {isLoggedIn ? (
+              <ChevronUp
+                size={18}
+                className={`transition-transform duration-300 ${isDropdownOpen ? "rotate-180 text-white" : ""}`}
+              />
+            ) : (
+              <div
+                className="p-1.5 bg-slate-700/50 hover:bg-indigo-500/20 hover:text-indigo-400 rounded-lg transition-all"
+                title="Login ke Akun"
+              >
+                <LogIn size={16} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </aside>

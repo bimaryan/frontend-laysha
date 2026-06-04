@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
-  ShieldCheck, // Menggunakan ShieldCheck agar sama dengan Sidebar klien
+  ShieldCheck,
   LayoutDashboard,
   FileText,
   User,
@@ -11,11 +11,56 @@ import {
   X,
   Bell,
   Calendar,
+  Settings, // Tambahkan icon Settings
 } from "lucide-react";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [adminData, setAdminData] = useState({
+    nama: "Administrator",
+    role: "admin",
+  });
+
+  // State untuk dropdown menu (Mirip seperti sidebar user)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      const token = localStorage.getItem("safetalk_token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/auth/user", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAdminData({ nama: data.nama_lengkap, role: data.role });
+        }
+      } catch (error) {
+        console.error("Gagal load profil:", error);
+      }
+    };
+    fetchAdminData();
+  }, []);
+
+  // Menutup dropdown jika klik di luar area
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     Swal.fire({
@@ -23,8 +68,8 @@ const AdminLayout = () => {
       text: "Sesi Anda akan diakhiri secara aman.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#4f46e5", // Indigo 600
-      cancelButtonColor: "#e11d48", // Rose 600
+      confirmButtonColor: "#4f46e5",
+      cancelButtonColor: "#e11d48",
       confirmButtonText: "Ya, Keluar",
       cancelButtonText: "Batal",
     }).then(async (result) => {
@@ -32,7 +77,7 @@ const AdminLayout = () => {
         try {
           const token = localStorage.getItem("safetalk_token");
           if (token) {
-            await fetch("https://backend.safetalkai.my.id/api/auth/logout", {
+            await fetch("http://127.0.0.1:8000/api/auth/logout", {
               method: "POST",
               headers: {
                 Accept: "application/json",
@@ -141,35 +186,62 @@ const AdminLayout = () => {
           ))}
         </nav>
 
-        {/* FOOTER SIDEBAR (User Profile Section) */}
-        <div className="p-4 border-t border-slate-800">
-          <div className="bg-slate-800/40 rounded-xl p-3 flex items-center gap-3 border border-slate-700/50 mb-3">
-            <div className="bg-indigo-500/20 text-indigo-400 w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-              <User size={14} />
+        {/* FOOTER SIDEBAR (User Profile Dropdown) */}
+        <div
+          className="p-4 border-t border-slate-800 mt-auto relative"
+          ref={dropdownRef}
+        >
+          {isDropdownOpen && (
+            <div className="absolute bottom-full left-4 right-4 mb-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <button
+                onClick={() => {
+                  navigate("/admin/profil");
+                  setIsDropdownOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
+              >
+                <User size={18} className="text-indigo-400" />
+                <span>Pengaturan Profil</span>
+              </button>
+              <div className="h-px bg-slate-700/50 w-full"></div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+              >
+                <LogOut size={18} />
+                <span>Keluar Panel</span>
+              </button>
             </div>
-            <div className="overflow-hidden text-left">
-              <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">
-                Role
-              </p>
-              <p className="text-sm text-slate-200 font-semibold truncate">
-                Administrator
-              </p>
+          )}
+
+          <div
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className={`bg-slate-800/40 rounded-xl p-3 flex items-center justify-between border cursor-pointer transition-all ${
+              isDropdownOpen
+                ? "border-slate-600 bg-slate-800"
+                : "border-slate-700/50 hover:bg-slate-800"
+            }`}
+          >
+            <div className="flex items-center gap-3 overflow-hidden text-left">
+              <div className="bg-indigo-500/20 text-indigo-400 w-8 h-8 rounded-full flex items-center justify-center shrink-0">
+                <User size={14} />
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">
+                  {adminData.role}
+                </p>
+                <p className="text-sm text-slate-200 font-semibold truncate capitalize">
+                  {adminData.nama}
+                </p>
+              </div>
             </div>
           </div>
-
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-bold border border-slate-700 text-slate-400 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-300"
-          >
-            <LogOut size={16} />
-            Keluar Panel
-          </button>
         </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* NAVBAR ATAS (Warna Putih Bersih agar Konten Menonjol) */}
+        {/* NAVBAR ATAS */}
         <header className="flex items-center justify-between bg-white border-b border-slate-200 px-6 md:px-8 py-4 shrink-0">
           <div className="flex items-center gap-4">
             <button

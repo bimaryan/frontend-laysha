@@ -43,10 +43,9 @@ const Chat = () => {
     else return;
 
     try {
-      const res = await fetch(
-        "http://127.0.0.1:8000/api/chat/history",
-        { headers },
-      );
+      const res = await fetch("http://127.0.0.1:8000/api/chat/history", {
+        headers,
+      });
       const data = await res.json();
 
       if (data.status === "success") {
@@ -132,16 +131,13 @@ const Chat = () => {
     }
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/chat/send",
-        {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            message: text,
-          }),
-        },
-      );
+      const response = await fetch("http://127.0.0.1:8000/api/chat/send", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          message: text,
+        }),
+      });
 
       const result = await response.json();
 
@@ -169,19 +165,30 @@ const Chat = () => {
     }
   };
 
-  // Format teks tebal (markdown style)
+  // --- PERBAIKAN DI SINI ---
+  // Format teks tebal & Baris Baru (Enter)
   const formatText = (text) => {
     if (!text) return "";
-    return text.split(/(\*\*.*?\*\*)/g).map((part, i) =>
-      part.startsWith("**") && part.endsWith("**") ? (
-        <strong key={i} className="font-bold">
-          {part.slice(2, -2)}
-        </strong>
-      ) : (
-        part
-      ),
-    );
+
+    // Pisahkan teks berdasarkan karakter enter (\n)
+    return text.split("\n").map((line, lineIndex) => (
+      <React.Fragment key={lineIndex}>
+        {/* Di dalam setiap baris, cek apakah ada teks tebal (**) */}
+        {line.split(/(\*\*.*?\*\*)/g).map((part, i) =>
+          part.startsWith("**") && part.endsWith("**") ? (
+            <strong key={i} className="font-bold">
+              {part.slice(2, -2)}
+            </strong>
+          ) : (
+            part
+          ),
+        )}
+        {/* Tambahkan tag <br> di akhir setiap baris */}
+        <br />
+      </React.Fragment>
+    ));
   };
+  // -------------------------
 
   return (
     <div className="fixed inset-0 bottom-[80px] md:bottom-0 md:left-64 flex flex-col bg-slate-50 font-sans text-slate-900 overflow-hidden z-10">
@@ -250,8 +257,9 @@ const Chat = () => {
                   isAlignedRight ? "items-end" : "items-start"
                 } max-w-[85%]`}
               >
+                {/* --- PERBAIKAN CLASS CSS DI SINI (tambah whitespace-pre-wrap & leading-relaxed) --- */}
                 <div
-                  className={`p-4 rounded-2xl shadow-sm text-sm border hover:opacity-90 transition-opacity ${
+                  className={`p-4 rounded-2xl shadow-sm text-sm border hover:opacity-90 transition-opacity whitespace-pre-wrap leading-relaxed ${
                     isFromAdmin
                       ? "bg-rose-50 border-rose-200 text-rose-900 rounded-tl-none"
                       : isFromAI

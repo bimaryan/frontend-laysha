@@ -69,7 +69,7 @@ const Home = () => {
         <div className="bg-indigo-600 p-5 rounded-[2rem] shadow-2xl shadow-indigo-500/20 mb-8 animate-bounce">
           <ShieldCheck className="w-16 h-16 text-white" />
         </div>
-        <h1 className="text-4xl font-black tracking-tighter mb-2">SafeTalk AI</h1>
+        <h1 className="text-4xl font-black tracking-tighter mb-2">SafeTalk</h1>
         <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-xs mb-8">
           Anda Tidak Sendiri
         </p>
@@ -136,7 +136,7 @@ const Home = () => {
         <ShieldCheck className="w-10 h-10 text-indigo-500" />
       </div>
       <h1 className="text-3xl font-black text-slate-800 mb-1 tracking-tight">
-        SafeTalk AI
+        SafeTalk
       </h1>
       <p className="text-slate-400 font-medium mb-12">
         Silakan Pilih Akses Masuk

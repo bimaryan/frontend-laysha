@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Phone,
-  AlertCircle,
-  Clock,
-  Smartphone,
-  Monitor,
-  ShieldAlert,
-} from "lucide-react";
+import { Phone, AlertCircle, Clock, ShieldAlert } from "lucide-react";
 
 const Emergency = () => {
   const emergencyContacts = [
@@ -41,75 +34,154 @@ const Emergency = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-10">
-      <div className="bg-red-600 pt-8 pb-12 px-6 rounded-b-[2.5rem] shadow-md relative">
-        <div className="w-full mx-auto">
-          <div className="flex items-center gap-3 mb-2">
+    <>
+      {/* ========================================================= */}
+      {/* 1. TAMPILAN KHUSUS MOBILE (HP)                            */}
+      {/* ========================================================= */}
+      <div className="block md:hidden min-h-screen bg-slate-50 pb-24 relative w-full">
+        {/* Header Melengkung ala Profil */}
+        <div className="bg-rose-600 pt-12 pb-24 px-6 rounded-b-[2rem]">
+          <div className="flex items-center gap-3 mb-1">
             <div className="bg-white/20 p-2 rounded-full">
-              <ShieldAlert className="text-white w-8 h-8" />
+              <ShieldAlert className="text-white w-7 h-7" />
             </div>
-            <h1 className="text-3xl font-bold text-white tracking-wide">
-              Bantuan Darurat
-            </h1>
+            <h1 className="text-2xl font-bold text-white">Bantuan Darurat</h1>
           </div>
-          <p className="text-red-100 ml-[3.75rem] text-sm md:text-base">
-            Hubungan langsung dengan layanan dukungan keamanan.
+          <p className="text-rose-100 text-sm mt-1 ml-14">
+            Hubungan langsung dengan layanan keamanan.
+          </p>
+        </div>
+
+        {/* Konten Utama ditarik ke atas menimpa header */}
+        <div className="px-6 -mt-16 space-y-6">
+          {/* Card Peringatan */}
+          <div className="bg-orange-50 border-l-[6px] border-orange-400 p-5 rounded-xl shadow-sm flex items-start gap-4">
+            <AlertCircle className="text-orange-500 w-6 h-6 mt-0.5 shrink-0" />
+            <div>
+              <h3 className="font-bold text-orange-900 text-sm">
+                Jika Anda dalam bahaya langsung
+              </h3>
+              <p className="text-orange-800 text-xs mt-1.5 leading-relaxed">
+                Segera hubungi 110 (Polisi) atau segera lari ke tempat aman
+                terdekat.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-slate-800 font-bold mb-3">
+              Kontak Layanan Dukungan
+            </h2>
+            <div className="space-y-4">
+              {emergencyContacts.map((contact, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100"
+                >
+                  <div className="mb-5">
+                    <h3 className="text-lg font-bold text-slate-800 leading-tight">
+                      {contact.name}
+                    </h3>
+                    <p className="text-slate-500 text-sm mt-1">
+                      {contact.subtitle}
+                    </p>
+
+                    <div className="flex items-center gap-2 mt-4 text-slate-500 text-xs bg-slate-50 w-fit px-3 py-1.5 rounded-lg border border-slate-100">
+                      <Clock size={14} className="text-slate-400" />
+                      <span className="font-medium">{contact.hours}</span>
+                    </div>
+                  </div>
+
+                  {/* Tombol Dial ala Tombol Save Profil */}
+                  <a
+                    href={`tel:${contact.phoneUrl}`}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3.5 rounded-2xl flex justify-center items-center gap-2 shadow-lg shadow-blue-200 transition-all"
+                  >
+                    <Phone size={20} />
+                    Hubungi {contact.number}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-slate-400 pt-2">
+            Tekan tombol biru untuk melakukan panggilan langsung.
           </p>
         </div>
       </div>
 
-      <div className="w-full mx-auto px-4 mt-6 space-y-6">
-        <div className="bg-[#FFF8E1] border-l-[6px] border-orange-400 p-5 rounded-r-xl shadow-sm flex items-start gap-4">
-          <AlertCircle className="text-orange-500 w-6 h-6 mt-1 shrink-0" />
-          <div>
-            <h3 className="font-bold text-orange-900 text-sm md:text-base">
-              Jika Anda dalam bahaya langsung
-            </h3>
-            <p className="text-orange-800 text-xs md:text-sm mt-1">
-              Segera hubungi 110 (Polisi) atau segera lari ke tempat aman
-              terdekat.
-            </p>
+      {/* ========================================================= */}
+      {/* 2. TAMPILAN KHUSUS DESKTOP (DASHBOARD LAYOUT)             */}
+      {/* ========================================================= */}
+      <div className="hidden md:block min-h-screen bg-slate-50 p-6 xl:p-8 w-full">
+        <div className="mx-auto">
+          {/* Header Desktop */}
+          <div className="mb-6 flex items-center gap-4">
+            <div className="w-14 h-14 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-600 shadow-sm border border-rose-50">
+              <ShieldAlert size={28} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800">
+                Bantuan Darurat
+              </h1>
+              <p className="text-slate-500 mt-1 text-sm">
+                Hubungan langsung dengan layanan dukungan keamanan dan
+                psikologis.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <h2 className="font-bold text-gray-800 text-lg px-1">
-          Kontak Layanan Dukungan
-        </h2>
+          {/* Card Peringatan Desktop */}
+          <div className="bg-orange-50 border-l-[6px] border-orange-400 p-5 rounded-2xl shadow-sm flex items-start gap-4 mb-8">
+            <AlertCircle className="text-orange-500 w-6 h-6 mt-0.5 shrink-0" />
+            <div>
+              <h3 className="font-bold text-orange-900 text-base">
+                Jika Anda dalam bahaya langsung
+              </h3>
+              <p className="text-orange-800 text-sm mt-1">
+                Segera hubungi 110 (Polisi) atau lari ke tempat aman terdekat.
+              </p>
+            </div>
+          </div>
 
-        <div className="space-y-4">
-          {emergencyContacts.map((contact, idx) => (
-            <div
-              key={idx}
-              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
-            >
-              <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-800">
-                  {contact.name}
-                </h3>
-                <p className="text-gray-500 text-sm mt-1">{contact.subtitle}</p>
+          {/* Grid Layout Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {emergencyContacts.map((contact, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between"
+              >
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-1">
+                    {contact.name}
+                  </h3>
+                  <p className="text-slate-500 text-sm leading-relaxed min-h-[40px]">
+                    {contact.subtitle}
+                  </p>
 
-                <div className="flex items-center gap-2 mt-3 text-gray-500 text-sm bg-gray-50 w-fit px-3 py-1 rounded-full">
-                  <Clock size={14} />
-                  <span>{contact.hours}</span>
+                  <div className="flex items-center gap-2 mt-5 text-slate-500 text-xs bg-slate-50 w-fit px-3 py-1.5 rounded-lg border border-slate-100">
+                    <Clock size={14} className="text-slate-400" />
+                    <span className="font-medium">{contact.hours}</span>
+                  </div>
+                </div>
+
+                {/* Tombol Dial Desktop */}
+                <div className="pt-6 mt-auto">
+                  <a
+                    href={`tel:${contact.phoneUrl}`}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-3 px-6 rounded-xl flex justify-center items-center gap-2 shadow-lg shadow-blue-200 transition-all hover:-translate-y-0.5"
+                  >
+                    <Phone size={18} />
+                    Panggil {contact.number}
+                  </a>
                 </div>
               </div>
-
-              <a
-                href={`tel:${contact.phoneUrl}`}
-                className="block w-full bg-[#3B82F6] hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl text-center transition-colors shadow-blue-200 shadow-lg flex items-center justify-center gap-2"
-              >
-                <Phone size={20} className="fill-current" />
-                {contact.number}
-              </a>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-
-        <p className="text-center text-xs text-gray-400 py-4">
-          Tekan tombol biru untuk melakukan panggilan langsung.
-        </p>
       </div>
-    </div>
+    </>
   );
 };
 

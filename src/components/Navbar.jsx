@@ -8,7 +8,7 @@ const Navbar = () => {
         <Shield className="w-10 h-10 text-[#0055A5] bg-white p-2 rounded-xl shadow-sm" />
         <div className="flex flex-col">
           <span className="text-xl font-bold tracking-wide text-white">
-            SafeTalkAI
+            SafeTalk
           </span>
           <span className="text-xs text-blue-100 opacity-90">Mode Anonim</span>
         </div>
@@ -20,7 +20,7 @@ const Navbar = () => {
           <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0055A5]"></span>
         </button>
         <div className="w-8 h-8 rounded-full bg-white/20 border-2 border-white/30 shadow-sm flex items-center justify-center text-xs text-white font-bold">
-          UJ
+          
         </div>
       </div>
     </header>

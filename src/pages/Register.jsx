@@ -282,7 +282,7 @@ const Register = () => {
                   <span className="text-[#3B82F6]">Syarat & Ketentuan</span>{" "}
                   serta{" "}
                   <span className="text-[#3B82F6]">Kebijakan Privasi</span>{" "}
-                  SafeTalkAI.
+                  SafeTalk.
                 </label>
               </div>
 

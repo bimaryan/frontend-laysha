@@ -20,6 +20,8 @@ import AdminReportDetail from "./pages/AdminReportDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminReports from "./pages/AdminReports";
 import Panduan from "./pages/Panduan";
+import Profil from "./pages/Profil";
+import AdminProfile from "./pages/AdminProfile";
 
 // --- LOGIKA GUARD UNTUK HALAMAN CHAT KLIEN ---
 const ChatGuard = () => {
@@ -51,6 +53,7 @@ function App() {
         <Route element={<ChatGuard />}>
           <Route path="/chat" element={<Chat />} />
           <Route path="/panduan" element={<Panduan />} />
+          <Route path="/profil" element={<Profil />} />
         </Route>
 
         {/* Emergency Route (Bisa diakses siapa saja, no guard needed) */}
@@ -64,6 +67,7 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/reports" element={<AdminReports />} />
             <Route path="/admin/reports/:id" element={<AdminReportDetail />} />
+            <Route path="/admin/profil" element={<AdminProfile />} />
           </Route>
         </Route>
       </Routes>
