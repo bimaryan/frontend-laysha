@@ -84,7 +84,7 @@ const BottomNav = () => {
         )}
       </NavLink>
 
-      {/* Dinamis: Tampilkan Profil jika login, Keluar Sesi jika anonim aktif, Login jika anonim kosong */}
+      {/* Dinamis: Tampilkan Profil jika login, Login jika belum */}
       {isAuthenticated ? (
         <NavLink
           to="/profil"
@@ -103,14 +103,6 @@ const BottomNav = () => {
             </>
           )}
         </NavLink>
-      ) : hasAnonymousSession ? (
-        <button
-          onClick={handleEndAnonymousSession}
-          className={`${baseClass} text-slate-400 hover:text-rose-500`}
-        >
-          <LogOut size={24} strokeWidth={2} />
-          <span className="text-[11px] font-bold">Keluar</span>
-        </button>
       ) : (
         <NavLink
           to="/login"
@@ -129,6 +121,17 @@ const BottomNav = () => {
             </>
           )}
         </NavLink>
+      )}
+
+      {/* Tombol ke-4: HANYA muncul untuk Anonim yang memiliki sesi aktif */}
+      {!isAuthenticated && hasAnonymousSession && (
+        <button
+          onClick={handleEndAnonymousSession}
+          className={`${baseClass} text-slate-400 hover:text-rose-500`}
+        >
+          <LogOut size={24} strokeWidth={2} />
+          <span className="text-[11px] font-bold">Keluar</span>
+        </button>
       )}
     </div>
   );
