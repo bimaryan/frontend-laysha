@@ -13,6 +13,7 @@ const AdminReports = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [monthFilter, setMonthFilter] = useState("");
   const [isExporting, setIsExporting] = useState(false);
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -21,7 +22,7 @@ const AdminReports = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchReports = async (page = 1, search = "") => {
+  const fetchReports = async (page = 1, search = "", month = "") => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("safetalk_token");
@@ -30,8 +31,13 @@ const AdminReports = () => {
         return;
       }
 
+      let url = `http://127.0.0.1:8000/api/admin/reports?page=${page}&search=${search}`;
+      if (month) {
+        url += `&month=${month}`;
+      }
+
       const response = await fetch(
-        `http://127.0.0.1:8000/api/admin/reports?page=${page}&search=${search}`,
+        url,
         {
           method: "GET",
           headers: {
@@ -61,8 +67,13 @@ const AdminReports = () => {
     setIsExporting(true);
     try {
       const token = localStorage.getItem("safetalk_token");
+      let url = `http://127.0.0.1:8000/api/admin/reports/export?search=${searchQuery}`;
+      if (monthFilter) {
+        url += `&month=${monthFilter}`;
+      }
+      
       const response = await fetch(
-        `http://127.0.0.1:8000/api/admin/reports/export?search=${searchQuery}`,
+        url,
         {
           method: "GET",
           headers: {
@@ -97,13 +108,13 @@ const AdminReports = () => {
 
   const handleSearchKeyPress = (e) => {
     if (e.key === "Enter") {
-      fetchReports(1, searchQuery);
+      fetchReports(1, searchQuery, monthFilter);
     }
   };
 
   useEffect(() => {
-    fetchReports(1);
-  }, []);
+    fetchReports(1, searchQuery, monthFilter);
+  }, [monthFilter]); // Auto refetch when month changes
 
   const getCategoryBadge = (category) => {
     if (category === "NON_KDRT" || category === "SAPAAN") {
@@ -154,18 +165,26 @@ const AdminReports = () => {
             {isExporting ? "Memproses..." : "Export Excel"}
           </button>
 
-          <div className="relative group w-full sm:w-auto">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-            </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
             <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyPress}
-              placeholder="Cari ID / Nama... (Enter)"
-              className="pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full md:w-64 bg-white text-sm transition-all shadow-sm"
+              type="month"
+              value={monthFilter}
+              onChange={(e) => setMonthFilter(e.target.value)}
+              className="px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-auto bg-white text-sm transition-all shadow-sm"
             />
+            <div className="relative group w-full sm:w-auto">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyPress}
+                placeholder="Cari ID / Nama... (Enter)"
+                className="pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none w-full md:w-64 bg-white text-sm transition-all shadow-sm"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -304,7 +323,7 @@ const AdminReports = () => {
             <div className="flex gap-2">
               <button
                 onClick={() =>
-                  fetchReports(pagination.current_page - 1, searchQuery)
+                  fetchReports(pagination.current_page - 1, searchQuery, monthFilter)
                 }
                 disabled={pagination.current_page === 1}
                 className="p-2 bg-white border rounded-xl disabled:opacity-50 transition-colors hover:bg-slate-50 shadow-sm"
@@ -313,7 +332,7 @@ const AdminReports = () => {
               </button>
               <button
                 onClick={() =>
-                  fetchReports(pagination.current_page + 1, searchQuery)
+                  fetchReports(pagination.current_page + 1, searchQuery, monthFilter)
                 }
                 disabled={pagination.current_page === pagination.last_page}
                 className="p-2 bg-white border rounded-xl disabled:opacity-50 transition-colors hover:bg-slate-50 shadow-sm"

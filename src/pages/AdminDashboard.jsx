@@ -6,8 +6,10 @@ import {
   AlertTriangle,
   MessageSquare,
   Users,
+  PieChart as PieChartIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -85,6 +87,33 @@ const AdminDashboard = () => {
     return ((value / total) * 100).toFixed(1);
   };
 
+  // Data untuk Pie Chart
+  const pieData = [
+    { name: "Risiko Tinggi", value: risikoTinggi, color: "#f43f5e" }, // rose-500
+    { name: "Risiko Sedang", value: risikoSedang, color: "#f59e0b" }, // amber-500
+    { name: "Risiko Rendah", value: risikoRendah, color: "#3b82f6" }, // blue-500
+    { name: "Konsultasi Umum", value: nonKdrt, color: "#10b981" }, // emerald-500
+  ].filter(item => item.value > 0); // Hanya tampilkan yang ada datanya
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100 text-sm">
+          <p className="font-bold" style={{ color: payload[0].payload.color }}>
+            {payload[0].name}
+          </p>
+          <p className="text-gray-600">
+            Total: <span className="font-bold">{payload[0].value}</span> interaksi
+          </p>
+          <p className="text-gray-500 text-xs mt-1">
+            {calculatePercentage(payload[0].value, totalKasus)}% dari total
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64 text-blue-600 font-bold animate-pulse">
@@ -145,97 +174,136 @@ const AdminDashboard = () => {
           </h3>
         </div>
 
-        <div className="space-y-6">
-          {/* Risiko Darurat / Tinggi (K4, K5) */}
-          <div>
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-600 font-medium">
-                Risiko Tinggi / Darurat (K4, K5)
-              </span>
-              <span className="font-bold text-rose-600">
-                {calculatePercentage(risikoTinggi, totalKasus)}%
-              </span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Progress Bars (Kiri) */}
+          <div className="space-y-6">
+            {/* Risiko Darurat / Tinggi (K4, K5) */}
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-600 font-medium">
+                  Risiko Tinggi / Darurat (K4, K5)
+                </span>
+                <span className="font-bold text-rose-600">
+                  {calculatePercentage(risikoTinggi, totalKasus)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
+                <div
+                  className="bg-rose-500 h-full rounded-full transition-all duration-1000"
+                  style={{
+                    width: `${calculatePercentage(risikoTinggi, totalKasus)}%`,
+                  }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-400 font-medium">
+                {risikoTinggi} Interaksi
+              </p>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
-              <div
-                className="bg-rose-500 h-full rounded-full transition-all duration-1000"
-                style={{
-                  width: `${calculatePercentage(risikoTinggi, totalKasus)}%`,
-                }}
-              ></div>
+
+            {/* Risiko Sedang (K2, K3) */}
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-600 font-medium">
+                  Risiko Sedang (K2, K3)
+                </span>
+                <span className="font-bold text-amber-500">
+                  {calculatePercentage(risikoSedang, totalKasus)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
+                <div
+                  className="bg-amber-500 h-full rounded-full transition-all duration-1000"
+                  style={{
+                    width: `${calculatePercentage(risikoSedang, totalKasus)}%`,
+                  }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-400 font-medium">
+                {risikoSedang} Interaksi
+              </p>
             </div>
-            <p className="text-xs text-gray-400 font-medium">
-              {risikoTinggi} Interaksi
-            </p>
+
+            {/* Risiko Rendah (K1) */}
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-600 font-medium">
+                  Risiko Rendah / Perhatian (K1)
+                </span>
+                <span className="font-bold text-blue-500">
+                  {calculatePercentage(risikoRendah, totalKasus)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
+                <div
+                  className="bg-blue-500 h-full rounded-full transition-all duration-1000"
+                  style={{
+                    width: `${calculatePercentage(risikoRendah, totalKasus)}%`,
+                  }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-400 font-medium">
+                {risikoRendah} Interaksi
+              </p>
+            </div>
+
+            {/* NON KDRT / Konsultasi Umum */}
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-600 font-medium">
+                  Konsultasi Umum (NON_KDRT)
+                </span>
+                <span className="font-bold text-emerald-500">
+                  {calculatePercentage(nonKdrt, totalKasus)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
+                <div
+                  className="bg-emerald-500 h-full rounded-full transition-all duration-1000"
+                  style={{
+                    width: `${calculatePercentage(nonKdrt, totalKasus)}%`,
+                  }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-400 font-medium">
+                {nonKdrt} Interaksi
+              </p>
+            </div>
           </div>
 
-          {/* Risiko Sedang (K2, K3) */}
-          <div>
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-600 font-medium">
-                Risiko Sedang (K2, K3)
-              </span>
-              <span className="font-bold text-amber-500">
-                {calculatePercentage(risikoSedang, totalKasus)}%
-              </span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
-              <div
-                className="bg-amber-500 h-full rounded-full transition-all duration-1000"
-                style={{
-                  width: `${calculatePercentage(risikoSedang, totalKasus)}%`,
-                }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-400 font-medium">
-              {risikoSedang} Interaksi
-            </p>
-          </div>
-
-          {/* Risiko Rendah (K1) */}
-          <div>
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-600 font-medium">
-                Risiko Rendah / Perhatian (K1)
-              </span>
-              <span className="font-bold text-blue-500">
-                {calculatePercentage(risikoRendah, totalKasus)}%
-              </span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
-              <div
-                className="bg-blue-500 h-full rounded-full transition-all duration-1000"
-                style={{
-                  width: `${calculatePercentage(risikoRendah, totalKasus)}%`,
-                }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-400 font-medium">
-              {risikoRendah} Interaksi
-            </p>
-          </div>
-
-          {/* NON KDRT / Konsultasi Umum */}
-          <div>
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-600 font-medium">
-                Konsultasi Umum (NON_KDRT)
-              </span>
-              <span className="font-bold text-emerald-500">
-                {calculatePercentage(nonKdrt, totalKasus)}%
-              </span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-3 mb-1 overflow-hidden">
-              <div
-                className="bg-emerald-500 h-full rounded-full transition-all duration-1000"
-                style={{
-                  width: `${calculatePercentage(nonKdrt, totalKasus)}%`,
-                }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-400 font-medium">
-              {nonKdrt} Interaksi
-            </p>
+          {/* Pie Chart (Kanan) */}
+          <div className="h-64 md:h-80 w-full">
+            {pieData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={36}
+                    formatter={(value, entry) => (
+                      <span className="text-sm font-medium text-gray-700">{value}</span>
+                    )}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                <PieChartIcon size={48} className="mb-2 opacity-50" />
+                <p>Belum ada data distribusi</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
