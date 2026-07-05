@@ -36,7 +36,7 @@ const Chat = () => {
   // ==========================================
   const fetchHistory = async () => {
     let token = localStorage.getItem("safetalk_token");
-    let sessionId = localStorage.getItem("safetalk_session");
+    let sessionId = sessionStorage.getItem("safetalk_session");
     let headers = { Accept: "application/json" };
 
     if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -118,7 +118,7 @@ const Chat = () => {
     setIsLoading(true);
 
     let token = localStorage.getItem("safetalk_token");
-    let sessionId = localStorage.getItem("safetalk_session");
+    let sessionId = sessionStorage.getItem("safetalk_session");
     let headers = {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -144,7 +144,7 @@ const Chat = () => {
 
       if (response.ok) {
         if (result.session_id && !token) {
-          localStorage.setItem("safetalk_session", result.session_id);
+          sessionStorage.setItem("safetalk_session", result.session_id);
         }
         setIsLocked(result.is_locked || false);
         // Panggil history lagi buat narik balasan AI/Admin

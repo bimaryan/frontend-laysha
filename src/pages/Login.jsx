@@ -49,6 +49,7 @@ const Login = () => {
 
         // Hapus session anonim jika user memilih login
         localStorage.removeItem("safetalk_session");
+        sessionStorage.removeItem("safetalk_session");
 
         // Arahkan berdasarkan role yang didapat dari database
         if (result.user.role === "admin") {

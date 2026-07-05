@@ -97,6 +97,7 @@ const Sidebar = () => {
           // Hapus semua data sesi di local storage
           localStorage.removeItem("safetalk_token");
           localStorage.removeItem("safetalk_session");
+          sessionStorage.removeItem("safetalk_session");
           localStorage.removeItem("safetalk_role");
           localStorage.removeItem("isAuthenticated");
           localStorage.removeItem("userRole");
