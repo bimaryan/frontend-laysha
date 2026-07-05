@@ -217,6 +217,42 @@ const Chat = () => {
             </div>
           </div>
         </div>
+        
+        {/* TOMBOL AKHIRI SESI UNTUK ANONIM */}
+        {!localStorage.getItem("safetalk_token") && sessionStorage.getItem("safetalk_session") && (
+          <button
+            onClick={async () => {
+              const confirm = window.confirm("Apakah Anda yakin ingin mengakhiri sesi anonim ini? Riwayat chat akan dihapus secara permanen.");
+              if (!confirm) return;
+              
+              let sessionId = sessionStorage.getItem("safetalk_session");
+              if (sessionId) {
+                try {
+                  await fetch(`${API_BASE_URL}/api/chat/history`, {
+                    method: "DELETE",
+                    headers: {
+                      "X-Session-ID": sessionId,
+                      Accept: "application/json",
+                    },
+                  });
+                } catch (e) {
+                  console.error("Gagal menghapus sesi", e);
+                }
+              }
+              
+              sessionStorage.removeItem("safetalk_session");
+              setMessages([{
+                role: "ai",
+                text: "Halo! Saya **SafeTalk**. Ada yang bisa saya bantu?",
+                time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              }]);
+              window.location.reload();
+            }}
+            className="flex items-center gap-2 bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-rose-200 hover:bg-rose-100 transition"
+          >
+            Akhiri Sesi
+          </button>
+        )}
       </header>
 
       {/* CHAT AREA */}
