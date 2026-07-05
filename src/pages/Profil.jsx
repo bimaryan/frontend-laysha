@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 import {
   User,
   Calendar,
@@ -46,7 +47,7 @@ const Profil = () => {
       }
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/auth/user", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -111,7 +112,7 @@ const Profil = () => {
 
         try {
           if (token) {
-            await fetch("http://127.0.0.1:8000/api/auth/logout", {
+            await fetch(`${API_BASE_URL}/api/auth/logout`, {
               method: "POST",
               headers: {
                 Accept: "application/json",
@@ -152,7 +153,7 @@ const Profil = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/auth/user", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

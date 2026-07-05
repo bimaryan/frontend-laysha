@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "../config";
 import {
   User,
   Calendar,
@@ -29,7 +30,7 @@ const AdminProfile = () => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("safetalk_token");
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/auth/user", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -72,7 +73,7 @@ const AdminProfile = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/auth/user", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

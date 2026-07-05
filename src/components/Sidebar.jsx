@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 import Swal from "sweetalert2";
 import {
   MessageSquare,
@@ -42,7 +43,7 @@ const Sidebar = () => {
         const token = localStorage.getItem("safetalk_token");
         if (!token) return;
 
-        const response = await fetch("http://127.0.0.1:8000/api/auth/user", {
+        const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -82,7 +83,7 @@ const Sidebar = () => {
 
         try {
           if (token) {
-            await fetch("http://127.0.0.1:8000/api/auth/logout", {
+            await fetch(`${API_BASE_URL}/api/auth/logout`, {
               method: "POST",
               headers: {
                 Accept: "application/json",

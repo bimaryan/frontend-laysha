@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 import Swal from "sweetalert2";
 import {
   ArrowLeft,
@@ -38,7 +39,7 @@ const AdminReportDetail = () => {
       }
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/admin/reports/${id}`,
+        `${API_BASE_URL}/api/admin/reports/${id}`,
         {
           method: "GET",
           headers: {
@@ -91,7 +92,7 @@ const AdminReportDetail = () => {
     try {
       const token = localStorage.getItem("safetalk_token");
       const res = await fetch(
-        `http://127.0.0.1:8000/api/admin/reports/${id}/close`,
+        `${API_BASE_URL}/api/admin/reports/${id}/close`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -144,7 +145,7 @@ const AdminReportDetail = () => {
     try {
       const token = localStorage.getItem("safetalk_token");
       const res = await fetch(
-        `http://127.0.0.1:8000/api/admin/reports/${id}/reply`,
+        `${API_BASE_URL}/api/admin/reports/${id}/reply`,
         {
           method: "POST",
           headers: {

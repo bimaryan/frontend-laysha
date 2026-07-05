@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 import {
   Send,
   AlertCircle,
@@ -43,7 +44,7 @@ const Chat = () => {
     else return;
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/chat/history", {
+      const res = await fetch(`${API_BASE_URL}/api/chat/history`, {
         headers,
       });
       const data = await res.json();
@@ -131,7 +132,7 @@ const Chat = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/chat/send", {
+      const response = await fetch(`${API_BASE_URL}/api/chat/send`, {
         method: "POST",
         headers,
         body: JSON.stringify({

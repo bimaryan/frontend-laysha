@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Tambahkan useNavigate
+import { API_BASE_URL } from "../config";
 import {
   Mail,
   Lock,
@@ -46,7 +47,7 @@ const Register = () => {
 
     try {
       // 2. Tembak API Laravel
-      const response = await fetch("http://127.0.0.1:8000/api/auth/register", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

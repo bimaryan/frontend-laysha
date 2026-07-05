@@ -8,6 +8,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
 const AdminReports = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const AdminReports = () => {
         return;
       }
 
-      let url = `http://127.0.0.1:8000/api/admin/reports?page=${page}&search=${search}`;
+      let url = `${API_BASE_URL}/api/admin/reports?page=${page}&search=${search}`;
       if (month) {
         url += `&month=${month}`;
       }
@@ -67,7 +68,7 @@ const AdminReports = () => {
     setIsExporting(true);
     try {
       const token = localStorage.getItem("safetalk_token");
-      let url = `http://127.0.0.1:8000/api/admin/reports/export?search=${searchQuery}`;
+      let url = `${API_BASE_URL}/api/admin/reports/export?search=${searchQuery}`;
       if (monthFilter) {
         url += `&month=${monthFilter}`;
       }
