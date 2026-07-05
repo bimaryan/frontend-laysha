@@ -217,11 +217,43 @@ const Sidebar = () => {
           </div>
         )}
 
-        {/* Trigger / Tombol Status User */}
         <div
-          onClick={() => {
-            if (isLoggedIn) setIsDropdownOpen(!isDropdownOpen);
-            else navigate("/login");
+          onClick={async () => {
+            if (isLoggedIn) {
+              setIsDropdownOpen(!isDropdownOpen);
+            } else {
+              // User menganggap ini tombol "Keluar", jadi kita hapus riwayat chat anonim
+              Swal.fire({
+                title: "Akhiri Sesi Anonim?",
+                text: "Riwayat percakapan Anda akan dihapus permanen.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#4f46e5",
+                cancelButtonColor: "#e11d48",
+                confirmButtonText: "Ya, Keluar & Hapus",
+                cancelButtonText: "Batal",
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  const sessionId = sessionStorage.getItem("safetalk_session");
+                  if (sessionId) {
+                    try {
+                      await fetch(`${API_BASE_URL}/api/chat/history`, {
+                        method: "DELETE",
+                        headers: {
+                          "X-Session-ID": sessionId,
+                          Accept: "application/json",
+                        },
+                      });
+                    } catch (e) {
+                      console.error("Gagal hapus session", e);
+                    }
+                  }
+                  sessionStorage.removeItem("safetalk_session");
+                  navigate("/login");
+                  window.location.reload(); // Paksa reload agar state chat kereset
+                }
+              });
+            }
           }}
           className={`bg-slate-800/40 rounded-xl p-3 flex items-center justify-between border transition-all cursor-pointer ${
             isDropdownOpen
@@ -265,10 +297,10 @@ const Sidebar = () => {
               />
             ) : (
               <div
-                className="p-1.5 bg-slate-700/50 hover:bg-indigo-500/20 hover:text-indigo-400 rounded-lg transition-all"
-                title="Login ke Akun"
+                className="p-1.5 bg-slate-700/50 hover:bg-rose-500/20 hover:text-rose-400 rounded-lg transition-all"
+                title="Keluar Sesi"
               >
-                <LogIn size={16} />
+                <LogOut size={16} />
               </div>
             )}
           </div>
