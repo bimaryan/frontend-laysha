@@ -1,18 +1,55 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { MessageSquare, Phone, User, LogIn } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { MessageSquare, Phone, User, LogIn, LogOut } from "lucide-react";
+import Swal from "sweetalert2";
+import { API_BASE_URL } from "../config";
 
 const BottomNav = () => {
+  const navigate = useNavigate();
   const baseClass =
     "flex flex-col items-center justify-center gap-1 px-10 py-2 rounded-2xl transition-all duration-300";
 
-  // Cek apakah user sudah login (misalnya dengan mengecek token)
+  // Cek apakah user sudah login
   const isAuthenticated = !!localStorage.getItem("safetalk_token");
+  const hasAnonymousSession = !!sessionStorage.getItem("safetalk_session");
+
+  const handleEndAnonymousSession = () => {
+    Swal.fire({
+      title: "Akhiri Sesi Anonim?",
+      text: "Riwayat percakapan Anda akan dihapus permanen.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#4f46e5",
+      cancelButtonColor: "#e11d48",
+      confirmButtonText: "Ya, Keluar & Hapus",
+      cancelButtonText: "Batal",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const sessionId = sessionStorage.getItem("safetalk_session");
+        if (sessionId) {
+          try {
+            await fetch(`${API_BASE_URL}/api/chat/history`, {
+              method: "DELETE",
+              headers: {
+                "X-Session-ID": sessionId,
+                Accept: "application/json",
+              },
+            });
+          } catch (e) {
+            console.error("Gagal hapus session", e);
+          }
+        }
+        sessionStorage.removeItem("safetalk_session");
+        navigate("/login");
+        window.location.reload(); // Paksa reload agar state chat kereset
+      }
+    });
+  };
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-5 py-3 flex justify-between items-center z-50 shadow-[0_-5px_10px_rgba(0,0,0,0.02)] rounded-t-3xl">
       <NavLink
-        to="/chat" // Asumsi halaman utama user adalah /chat
+        to="/chat"
         className={({ isActive }) =>
           `${baseClass} ${
             isActive
@@ -47,7 +84,7 @@ const BottomNav = () => {
         )}
       </NavLink>
 
-      {/* Dinamis: Tampilkan Profil jika login, Login jika belum */}
+      {/* Dinamis: Tampilkan Profil jika login, Keluar Sesi jika anonim aktif, Login jika anonim kosong */}
       {isAuthenticated ? (
         <NavLink
           to="/profil"
@@ -66,6 +103,14 @@ const BottomNav = () => {
             </>
           )}
         </NavLink>
+      ) : hasAnonymousSession ? (
+        <button
+          onClick={handleEndAnonymousSession}
+          className={`${baseClass} text-slate-400 hover:text-rose-500`}
+        >
+          <LogOut size={24} strokeWidth={2} />
+          <span className="text-[11px] font-bold">Keluar</span>
+        </button>
       ) : (
         <NavLink
           to="/login"
