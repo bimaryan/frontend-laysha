@@ -58,10 +58,13 @@ const AdminDashboard = () => {
             recent_reports: payload.recent_reports || [],
           });
         } else {
-          console.error("Gagal memuat data dashboard");
+          const errorText = await response.text();
+          console.error(`Gagal memuat data dashboard. Status: ${response.status}`, errorText);
+          alert(`Gagal memuat data dashboard. Status: ${response.status}\n${errorText}`);
         }
       } catch (error) {
         console.error("Error koneksi:", error);
+        alert(`Gagal terhubung ke server dashboard: ${error.message}`);
       } finally {
         setIsLoading(false);
       }
