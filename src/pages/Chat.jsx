@@ -50,10 +50,23 @@ const Chat = () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        setIsLocked(data.is_locked || false);
+        setIsLocked(Boolean(data.is_locked));
 
-        if (data.data.length > 0) {
-          // Gabungin pesan pembuka sama riwayat chat dari server
+        const chatData = Array.isArray(data.data) ? data.data : [];
+
+        if (chatData.length > 0) {
+          const normalizedMessages = chatData.map((msg) => ({
+            id: msg.id,
+            role: msg.role || "ai",
+            text: msg.text || "",
+            time: msg.time || new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            instruction: msg.instruction || null,
+            replyTo: msg.replyTo || null,
+          }));
+
           setMessages([
             {
               role: "ai",
@@ -62,8 +75,23 @@ const Chat = () => {
                 hour: "2-digit",
                 minute: "2-digit",
               }),
+              instruction: null,
+              replyTo: null,
             },
-            ...data.data,
+            ...normalizedMessages,
+          ]);
+        } else {
+          setMessages([
+            {
+              role: "ai",
+              text: "Halo! Saya **SafeTalk**. Ada yang bisa saya bantu?",
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              instruction: null,
+              replyTo: null,
+            },
           ]);
         }
       }
@@ -146,8 +174,7 @@ const Chat = () => {
         if (result.session_id && !token) {
           sessionStorage.setItem("safetalk_session", result.session_id);
         }
-        setIsLocked(result.is_locked || false);
-        // Panggil history lagi buat narik balasan AI/Admin
+        setIsLocked(Boolean(result.is_locked));
         fetchHistory();
       } else {
         console.error("Server error:", result);

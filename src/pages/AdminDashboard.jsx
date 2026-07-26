@@ -49,7 +49,14 @@ const AdminDashboard = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setStats(data.data);
+          const payload = data?.data || {};
+
+          setStats({
+            total_users: payload.total_users || 0,
+            total_chats: payload.total_chats || 0,
+            category_distribution: payload.category_distribution || {},
+            recent_reports: payload.recent_reports || [],
+          });
         } else {
           console.error("Gagal memuat data dashboard");
         }

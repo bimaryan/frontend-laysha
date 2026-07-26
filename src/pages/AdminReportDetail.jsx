@@ -51,9 +51,23 @@ const AdminReportDetail = () => {
 
       if (response.ok) {
         const result = await response.json();
-        setTriggerReport(result.data.room);
-        setThread(result.data.thread);
-        setIsLocked(Boolean(result.data.is_locked));
+        const roomData = result?.data?.room || null;
+        const threadData = Array.isArray(result?.data?.thread)
+          ? result.data.thread
+          : [];
+
+        setTriggerReport(roomData);
+        setThread(
+          threadData.map((msg) => ({
+            id: msg.id,
+            role: msg.role || "ai",
+            text: msg.text || "",
+            time: msg.time || "",
+            instruction: msg.instruction || null,
+            replyTo: msg.replyTo || null,
+          })),
+        );
+        setIsLocked(Boolean(result?.data?.is_locked));
       }
     } catch (error) {
       console.error("Gagal mengambil detail:", error);
